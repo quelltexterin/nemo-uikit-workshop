@@ -2,6 +2,8 @@
     #LOGO
 \*------------------------------------*/
 
+@import '../../../sass/scss/core.scss';
+
 pl-logo {
   align-self: center;
   display: flex;
@@ -20,12 +22,16 @@ pl-logo {
 .pl-c-logo {
   width: auto;
   flex-grow: 1;
-  padding: 0.5rem 12px;
+  padding: 0.5rem 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: inherit;
   text-decoration: none;
+
+  @media screen and (min-width: 400px){
+    padding: 0.5rem 12px;
+  }
 
   outline: 0;
   text-transform: lowercase;

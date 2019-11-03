@@ -2,6 +2,8 @@
     #HEADER
 \*------------------------------------*/
 
+@import '../../../sass/scss/core.scss';
+
 pl-header {
   position: relative;
   position: sticky;
@@ -17,12 +19,8 @@ pl-header {
   color: $pl-color-gray-20;
   color: var(--theme-text, $pl-color-gray-20);
   border-right: 1px solid;
-  border-bottom: 1px solid;
   border-right-color: $pl-color-gray-20;
   border-right-color: var(--theme-border, $pl-color-gray-20);
-  border-bottom-color: $pl-color-gray-20;
-  border-bottom-color: var(--theme-border, $pl-color-gray-20);
-  box-shadow: 0 8px 15px 1px rgba(6, 10, 36, 0.1);
 
   .pl-c-body--theme-light & {
     color: $pl-color-black;

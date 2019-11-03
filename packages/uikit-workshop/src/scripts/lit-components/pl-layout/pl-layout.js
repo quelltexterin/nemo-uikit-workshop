@@ -4,34 +4,39 @@ const classNames = require('classnames');
 import { html } from 'lit-html';
 
 import { store } from '../../store.js'; // connect to redux
-import { BaseLitComponent } from '../base-component.js';
+import { BaseLitComponent } from '../../components/base-component.js';
+import styles from './pl-layout.scss?external';
 
-@define
 class Layout extends BaseLitComponent {
-  static is = 'pl-layout';
-
-  constructor(self) {
-    self = super(self);
-    self.useShadow = false;
-    self.targetOrigin =
+  constructor() {
+    super();
+    this.targetOrigin =
       window.location.protocol === 'file:'
         ? '*'
         : window.location.protocol + '//' + window.location.host;
-    return self;
   }
 
-  static props = {
-    layoutMode: props.string,
-    themeMode: props.string,
-  };
+  static get properties() {
+    return {
+      layoutMode: String,
+      themeMode: String,
+    };
+  }
 
-  connected() {
+  connectedCallback() {
+    super.connectedCallback && super.connectedCallback();
+    styles.use();
     const state = store.getState();
     this.layoutMode = state.app.layoutMode || 'vertical';
     this.themeMode = state.app.themeMode;
   }
 
-  rendered() {
+  disconnectedCallback() {
+    super.disconnectedCallback && super.disconnectedCallback();
+    styles.unuse();
+  }
+
+  firstUpdated() {
     this.iframeElement = this.renderRoot.querySelector('.pl-js-iframe');
   }
 
@@ -67,5 +72,7 @@ class Layout extends BaseLitComponent {
     `;
   }
 }
+
+customElements.define('pl-layout', Layout);
 
 export { Layout };

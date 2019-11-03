@@ -2,6 +2,8 @@
     #CONTROLS
 \*------------------------------------*/
 
+@import '../../../sass/scss/core.scss';
+
 pl-controls {
   margin-left: auto; /* 2 */
   display: flex;
@@ -15,7 +17,7 @@ pl-controls {
       width: 100%;
       position: relative;
       padding-top: 0.5rem;
-      box-shadow: 0 -2px 5px rgba($pl-color-black, 0.1);
+      // box-shadow: 0 -2px 5px rgba($pl-color-black, 0.1);
 
       &:before {
         position: absolute;

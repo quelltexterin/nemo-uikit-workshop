@@ -2,23 +2,24 @@
 import { define, props } from 'skatejs';
 import Mousetrap from 'mousetrap';
 import { h } from 'preact';
-import { BaseComponent } from '../base-component.js';
 import { urlHandler, patternName } from '../../utils';
 import { store } from '../../store'; // redux store
+import styles from './pl-tools-menu.scss?external';
 
 let listeningForBodyClicks = false;
 
 import { html } from 'lit-html';
-import { BaseLitComponent } from '../base-component.js';
+import { BaseLitComponent } from '../../components/base-component';
+import { customElement } from 'lit-element';
 
-@define
+@customElement('pl-tools-menu')
 class ToolsMenu extends BaseLitComponent {
-  static is = 'pl-tools-menu';
-
-  static props = {
-    isOpen: props.boolean,
-    layoutMode: props.string,
-  };
+  static get properties() {
+    return {
+      isOpen: Boolean,
+      layoutMode: String,
+    };
+  }
 
   _stateChanged(state) {
     if (this.currentUrl !== state.app.currentUrl) {
@@ -31,17 +32,16 @@ class ToolsMenu extends BaseLitComponent {
     }
   }
 
-  constructor(self) {
-    self = super(self);
-    self.handleClick = self.handleClick.bind(self);
-    self.receiveIframeMessage = self.receiveIframeMessage.bind(self);
-    self.handleExternalClicks = self.handleExternalClicks.bind(self);
-    self.useShadow = false;
-    return self;
+  constructor() {
+    super();
+    this.handleClick = this.handleClick.bind(this);
+    this.receiveIframeMessage = this.receiveIframeMessage.bind(this);
+    this.handleExternalClicks = this.handleExternalClicks.bind(this);
   }
 
-  connecting() {
-    super.connecting && super.connecting();
+  connectedCallback() {
+    super.connectedCallback && super.connectedCallback();
+    styles.use();
     const state = store.getState();
     const { ishControlsHide } = window.ishControls;
     this.currentUrl =
@@ -56,8 +56,9 @@ class ToolsMenu extends BaseLitComponent {
     });
   }
 
-  disconnecting() {
-    super.disconnecting && super.disconnecting();
+  disconnectedCallback() {
+    super.disconnectedCallback && super.disconnectedCallback();
+    styles.unuse();
     document.removeEventListener('click', this.handleExternalClicks);
     window.removeEventListener('message', this.receiveIframeMessage);
   }

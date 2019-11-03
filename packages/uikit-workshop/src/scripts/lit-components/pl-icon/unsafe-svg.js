@@ -13,20 +13,22 @@
  */
 
 import { reparentNodes } from 'lit-html/lib/dom.js';
-import { isPrimitive } from 'lit-html/lib/parts.js';
-import { directive, NodePart, Part } from 'lit-html/lit-html.js';
+// import { isPrimitive } from 'lit-html/lib/parts.js';
+import { directive, NodePart } from 'lit-html/lit-html.js';
+import importNode from '@ungap/import-node';
+// document.importNode = importNode;
 
-interface PreviousValue {
-  readonly value: unknown;
-  readonly fragment: DocumentFragment;
-}
+// interface PreviousValue {
+//   readonly value: unknown;
+//   readonly fragment: DocumentFragment;
+// }
 
 // For each part, remember the value that was last rendered to the part by the
 // unsafeSVG directive, and the DocumentFragment that was last set as a value.
 // The DocumentFragment is used as a unique key to check if the last value
 // rendered to the part was with unsafeSVG. If not, we'll always re-render the
 // value passed to unsafeSVG.
-const previousValues = new WeakMap<NodePart, PreviousValue>();
+const previousValues = new WeakMap();
 
 /**
  * Renders the result as SVG, rather than text.
@@ -35,29 +37,29 @@ const previousValues = new WeakMap<NodePart, PreviousValue>();
  * sanitized or escaped, as it may lead to cross-site-scripting
  * vulnerabilities.
  */
-export const unsafeSVG = directive((value: unknown) => (part: Part): void => {
-  if (!(part instanceof NodePart)) {
-    throw new Error('unsafeSVG can only be used in text bindings');
-  }
+export const unsafeSVG = directive(value => part => {
+  // if (!(part instanceof NodePart)) {
+  //   throw new Error('unsafeSVG can only be used in text bindings');
+  // }
 
-  const previousValue = previousValues.get(part);
+  // const previousValue = previousValues.get(part);
 
-  if (
-    previousValue !== undefined &&
-    isPrimitive(value) &&
-    value === previousValue.value &&
-    part.value === previousValue.fragment
-  ) {
-    return;
-  }
+  // if (
+  //   previousValue !== undefined &&
+  //   isPrimitive(value) &&
+  //   value === previousValue.value &&
+  //   part.value === previousValue.fragment
+  // ) {
+  //   return;
+  // }
 
   const template = document.createElement('template');
   template.innerHTML = `<svg>${value}</svg>`;
   const content = template.content;
-  const svgElement = content.firstElementChild!;
+  const svgElement = content.firstElementChild;
   content.removeChild(svgElement);
   reparentNodes(content, svgElement.firstChild);
-  const fragment = document.importNode(content, true);
+  const fragment = importNode(content, true);
   part.setValue(fragment);
-  previousValues.set(part, { value, fragment });
+  // previousValues.set(part, { value, fragment });
 });

@@ -1,3 +1,10 @@
+@import '../../../sass/scss/core.scss';
+
+pl-viewport-sizes {
+  display: flex;
+  justify-content: center;
+}
+
 /**
  * Size options
  * 1) This holds the S, M, L, Rand, Disco links
@@ -10,13 +17,6 @@
   margin: 0;
   padding: 0;
   overflow-x: auto;
-  padding: 0 0.25rem;
-
-  .pl-c-body--theme-sidebar & {
-    @media all and (min-width: $pl-bp-med) {
-      padding-bottom: 0.5rem;
-    }
-  }
 
   @media all and (min-width: $pl-bp-med) {
     align-items: center;
@@ -35,9 +35,15 @@
  * 1) These are the buttons that control the viewport resizing
  */
 .pl-c-size-list__action {
-  @include linkStyle();
-  padding-left: 0.3rem;
-  padding-right: 0.3rem;
+  @include buttonStyles;
+  min-height: 35px;
+  min-width: 0;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+
+  pl-icon {
+    pointer-events: none;
+  }
 }
 
 // Force list items to center align if not overflow scrolling
@@ -48,3 +54,4 @@
 .pl-c-size-list__item:last-child {
   margin-right: auto;
 }
+

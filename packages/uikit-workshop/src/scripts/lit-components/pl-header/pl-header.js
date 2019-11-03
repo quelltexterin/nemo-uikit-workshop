@@ -1,37 +1,38 @@
 /* eslint-disable no-unused-vars, no-param-reassign */
-import { define, props } from 'skatejs';
-import { h } from 'preact';
-const classNames = require('classnames');
-
 import { store } from '../../store.js'; // connect to redux
-import { BaseComponent } from '../base-component.js';
-
 import { html } from 'lit-html';
-import { BaseLitComponent } from '../base-component.js';
+import { BaseLitComponent } from '../../components/base-component';
+import { customElement } from 'lit-element';
+import styles from './pl-header.scss?external';
 
-@define
+@customElement('pl-header')
 class Header extends BaseLitComponent {
-  static is = 'pl-header';
-
-  constructor(self) {
-    self = super(self);
-    self.useShadow = false;
-    self.toggleNav = self.toggleNav.bind(self);
-    return self;
+  constructor() {
+    super();
+    this.toggleNav = this.toggleNav.bind(this);
   }
 
-  connected() {
+  connectedCallback() {
+    super.connectedCallback && super.connectedCallback();
+    styles.use();
     const state = store.getState();
     this.themeMode = state.app.themeMode || 'dark';
   }
 
-  static props = {
-    themeMode: props.string,
-  };
+  disconnectedCallback() {
+    super.disconnectedCallback && super.disconnectedCallback();
+    styles.unuse();
+  }
+
+  static get properties() {
+    return {
+      themeMode: String,
+    };
+  }
 
   _stateChanged(state) {
     this.themeMode = state.app.themeMode || 'dark';
-    this.triggerUpdate();
+    this.requestUpdate();
   }
 
   shouldUpdate(prevProps, prevState) {

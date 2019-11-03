@@ -2,15 +2,23 @@
     #ISH SIZING
 \*------------------------------------*/
 
+@import '../../../sass/scss/core.scss';
+
 /**
  * Viewport size form
  * 1) This is the form for the form that houses the current
  *    viewport size in px and em
  */
+pl-viewport-size {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .pl-c-viewport-size {
   margin: 0;
   border: 0;
-  padding: 0.3rem 0.5rem 0.4rem;
+  padding: 0.3rem 0.25rem;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -27,12 +35,13 @@
   border: 0;
   border-radius: $pl-border-radius;
   background-color: transparent;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: inherit;
-  width: 2.4rem;
+  width: auto;
   text-align: right;
   transition: all $pl-animate-quick ease-out;
   pointer-events: none;
+  text-overflow: ellipsis;
 
   &::-moz-focus-inner {
     padding: 0;

@@ -2,6 +2,8 @@
     #TOOLS
 \*------------------------------------*/
 
+@import '../../../sass/scss/core.scss';
+
 // vertical align in <pl-header> container
 pl-tools-menu {
   display: flex;
@@ -61,6 +63,9 @@ pl-tools-menu {
       border-radius: 0;
       background-color: transparent;
       right: 0;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
   }
 

@@ -7,6 +7,7 @@ import {
   updateDrawerHeight,
   updateDrawerAnimationState,
 } from '../../actions/app.js'; // redux actions needed by this element.
+import styles from './pl-drawer.scss?external';
 
 @customElement('pl-drawer')
 class Drawer extends LitElement {
@@ -16,6 +17,26 @@ class Drawer extends LitElement {
     self.onMouseUp = self.onMouseUp.bind(self); // fix bindings so "self" works properly
     self.onMouseMove = self.onMouseMove.bind(self); // fix bindings so "this" works properly
     return self;
+  }
+
+  connectedCallback() {
+    styles.use();
+    if (super.connectedCallback) {
+      super.connectedCallback();
+    }
+    this.__storeUnsubscribe = store.subscribe(() =>
+      this._stateChanged(store.getState())
+    );
+    this._stateChanged(store.getState());
+  }
+
+  disconnectedCallback() {
+    styles.unuse();
+    this.__storeUnsubscribe && this.__storeUnsubscribe();
+
+    if (super.disconnectedCallback) {
+      super.disconnectedCallback();
+    }
   }
 
   static get properties() {
@@ -94,12 +115,19 @@ class Drawer extends LitElement {
       <div>
         <div class="pl-c-drawer__cover" style="${styleMap(coverStyles)}"></div>
         <div style="${styleMap(drawerStyles)}" class="pl-c-drawer__wrapper">
+          <div class="pl-c-drawer__resizer" @mousedown="${this.onMouseDown}">
+            <svg
+              viewBox="0 0 20 20"
+              preserveAspectRatio="xMidYMid"
+              focusable="false"
+              class="pl-c-drawer__resizer-icon"
+            >
+              <title>Drag to resize Pattern Lab Drawer</title>
+              <path d="M6 0h2v20H6zM13 0h2v20h-2z" />
+            </svg>
+          </div>
           <div class="${classMap(classes)}">
             <div class="pl-c-drawer__toolbar">
-              <div
-                class="pl-c-drawer__resizer"
-                @mousedown="${this.onMouseDown}"
-              ></div>
               <div class="pl-c-drawer__toolbar-controls">
                 <pl-toggle-layout
                   size="small"
@@ -122,24 +150,6 @@ class Drawer extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  connectedCallback() {
-    if (super.connectedCallback) {
-      super.connectedCallback();
-    }
-    this.__storeUnsubscribe = store.subscribe(() =>
-      this._stateChanged(store.getState())
-    );
-    this._stateChanged(store.getState());
-  }
-
-  disconnectedCallback() {
-    this.__storeUnsubscribe && this.__storeUnsubscribe();
-
-    if (super.disconnectedCallback) {
-      super.disconnectedCallback();
-    }
   }
 
   _stateChanged(state) {

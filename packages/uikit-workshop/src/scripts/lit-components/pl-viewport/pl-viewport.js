@@ -1,35 +1,61 @@
 /* eslint-disable no-unused-vars, no-param-reassign */
-import { define, props } from 'skatejs';
-import { h } from 'preact';
 import URLSearchParams from '@ungap/url-search-params'; // URLSearchParams poly for older browsers
-import render from 'preact-render-to-string';
-
 import { store } from '../../store.js'; // connect to redux
 import { updateCurrentPattern, updateCurrentUrl } from '../../actions/app.js'; // redux actions
 import { updateViewportPx, updateViewportEm } from '../../actions/app.js'; // redux actions needed
 import { minViewportWidth, maxViewportWidth } from '../../utils';
-import { BaseComponent } from '../base-component.js';
 import { urlHandler, patternName } from '../../utils';
 
 import { html } from 'lit-html';
-import { BaseLitComponent } from '../base-component.js';
+import { BaseLitComponent } from '../../components/base-component.js';
 
-import styles from '../../../sass/pattern-lab--iframe-loader.scss';
+import iframeLoaderStyles from '../../../sass/pattern-lab--iframe-loader.scss?external';
+import styles from './pl-viewport.scss?external';
+import { customElement } from 'lit-element';
 
 let trackingPageChange = false;
 
-@define
+@customElement('pl-iframe')
 class IFrame extends BaseLitComponent {
-  static is = 'pl-iframe';
+  constructor() {
+    super();
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handlePageLoad = this.handlePageLoad.bind(this);
+    // this.receiveIframeMessage = this.receiveIframeMessage.bind(this);
+    this.handleResize = this.handleResize.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleIframeLoaded = this.handleIframeLoaded.bind(this);
+  }
 
-  constructor(self) {
-    self = super(self);
-    self.useShadow = false;
-    self.usingBrowserNav = true;
-    self._hasInitiallyRendered = false;
-    self.fullMode = true;
-    self.viewportResizeHandleWidth = 14; //Width of the viewport drag-to-resize handle
-    self.bodySize =
+  connectedCallback() {
+    super.connectedCallback && super.connectedCallback();
+    iframeLoaderStyles.use();
+    styles.use();
+
+    if (trackingPageChange === false) {
+      trackingPageChange = true;
+      document.addEventListener('patternPartial', this.handlePageLoad);
+      window.addEventListener('popstate', this.handlePageChange);
+    }
+
+    const state = store.getState();
+    this.themeMode = state.app.themeMode || 'dark';
+    this.isViewallPage = state.app.isViewallPage || false;
+    this.currentPattern = state.app.currentPattern || '';
+
+    if (state.app.viewportPx) {
+      this.sizeiframe(state.app.viewportPx, false);
+    }
+
+    // window.addEventListener('message', this.receiveIframeMessage, false);
+    window.addEventListener('resize', this.handleResize);
+    this.handleOrientationChange();
+
+    this.usingBrowserNav = true;
+    this._hasInitiallyRendered = false;
+    this.fullMode = true;
+    this.viewportResizeHandleWidth = 22; //Width of the viewport drag-to-resize handle
+    this.bodySize =
       window.config.ishFontSize !== undefined
         ? parseInt(window.config.ishFontSize, 10)
         : parseInt(
@@ -38,20 +64,20 @@ class IFrame extends BaseLitComponent {
               .getPropertyValue('font-size'),
             10
           ); //Body size of the document
-    self.handlePageChange = self.handlePageChange.bind(self);
-    self.handlePageLoad = self.handlePageLoad.bind(self);
-    // self.receiveIframeMessage = self.receiveIframeMessage.bind(self);
-    self.handleResize = self.handleResize.bind(self);
-    self.handleMouseDown = self.handleMouseDown.bind(self);
-    self.handleIframeLoaded = self.handleIframeLoaded.bind(self);
+
     //set up the default for the
-    self.baseIframePath =
+    this.baseIframePath =
       window.location.protocol +
       '//' +
       window.location.host +
       window.location.pathname.replace('index.html', '');
-    self.defaultIframePath = self.baseIframePath + '?p=components-overview';
-    return self;
+    this.defaultIframePath = this.baseIframePath + '?p=components-overview';
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback && super.disconnectedCallback();
+    iframeLoaderStyles.unuse();
+    styles.unuse();
   }
 
   // update the currently active nav + add / update the page's query string
@@ -116,29 +142,6 @@ class IFrame extends BaseLitComponent {
     }
   }
 
-  connected() {
-    const self = this;
-
-    if (trackingPageChange === false) {
-      trackingPageChange = true;
-      document.addEventListener('patternPartial', self.handlePageLoad);
-      window.addEventListener('popstate', self.handlePageChange);
-    }
-
-    const state = store.getState();
-    this.themeMode = state.app.themeMode || 'dark';
-    this.isViewallPage = state.app.isViewallPage || false;
-    this.currentPattern = state.app.currentPattern || '';
-
-    if (state.app.viewportPx) {
-      this.sizeiframe(state.app.viewportPx, false);
-    }
-
-    // window.addEventListener('message', this.receiveIframeMessage, false);
-    window.addEventListener('resize', this.handleResize);
-    this.handleOrientationChange();
-  }
-
   //Resize the viewport
   //'size' is the target size of the viewport
   //'animate' is a boolean for switching the CSS animation on or off. 'animate' is true by default, but can be set to false for things like nudging and dragging
@@ -149,24 +152,27 @@ class IFrame extends BaseLitComponent {
     // @todo: refactor to better handle the iframe async rendering
     if (this.iframe) {
       if (animate === true) {
-        this.iframeContainer.classList.add('vp-animate');
-        this.iframe.classList.add('vp-animate');
+        this.iframeContainer.classList.add('is-animate');
+        this.iframe.classList.add('is-animate');
       }
 
-      if (size > maxViewportWidth) {
-        //If the entered size is larger than the max allowed viewport size, cap value at max vp size
-        theSize = maxViewportWidth;
+      if (size < maxViewportWidth) {
+        theSize = size;
       } else if (size < minViewportWidth) {
         //If the entered size is less than the minimum allowed viewport size, cap value at min vp size
         theSize = minViewportWidth;
       } else {
-        theSize = size;
+        //If the entered size is larger than the max allowed viewport size, cap value at max vp size
+        theSize = maxViewportWidth;
+      }
+
+      if (theSize > this.clientWidth) {
+        theSize = this.clientWidth;
       }
 
       // resize viewport wrapper to desired size + size of drag resize handler
       // this.iframeContainer.style.width = theSize + this.viewportResizeHandleWidth + 'px';
-      this.iframeContainer.style.width =
-        theSize - this.viewportResizeHandleWidth + 'px';
+      this.iframeContainer.style.width = theSize + 'px';
       // this.iframe.style.width = theSize + 'px'; // resize viewport to desired size
 
       // auto-remove transition classes if not the animate param isn't set to true
@@ -329,8 +335,7 @@ class IFrame extends BaseLitComponent {
     store.dispatch(updateCurrentUrl(currentUrl));
   }
 
-  rendered() {
-    super.rendered && super.rendered();
+  firstUpdated() {
     this.iframe = this.querySelector('.pl-js-iframe');
     this.iframeContainer = this.querySelector('.pl-js-vp-iframe-container');
     this.iframeCover = this.querySelector('.pl-js-viewport-cover');
@@ -392,7 +397,7 @@ class IFrame extends BaseLitComponent {
                 viewBox="0 0 20 20"
                 preserveAspectRatio="xMidYMid"
                 focusable="false"
-                style="width: 30px; fill: currentColor; position: absolute; top: 50%; transform: translate3d(0, -50%, 0); z-index: 100;"
+                class="pl-c-viewport__resizer-handle-icon"
               >
                 <title>Drag to resize Pattern Lab</title>
                 <path d="M6 0h2v20H6zM13 0h2v20h-2z" />
@@ -409,7 +414,7 @@ class IFrame extends BaseLitComponent {
     const self = this;
     self.querySelector('.pl-js-resize-handle').classList.add('is-resizing');
     const origClientX = event.clientX;
-    const origViewportWidth = this.iframe.clientWidth;
+    const origViewportWidth = this.iframe.clientWidth + 40;
 
     this.fullMode = false;
 
@@ -418,8 +423,15 @@ class IFrame extends BaseLitComponent {
 
     function handleIframeCoverResize(e) {
       const viewportWidth = origViewportWidth + 2 * (e.clientX - origClientX);
-      if (viewportWidth > minViewportWidth) {
+      if (
+        viewportWidth > minViewportWidth &&
+        viewportWidth < maxViewportWidth
+      ) {
         self.sizeiframe(viewportWidth, false);
+      } else if (viewportWidth > maxViewportWidth) {
+        self.sizeiframe(maxViewportWidth, false);
+      } else {
+        self.sizeiframe(minViewportWidth, false);
       }
     }
 

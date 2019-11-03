@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { h } from 'preact';
 import { define, props } from 'skatejs';
-import { BaseComponent } from '../base-component.js';
+import { BaseComponent } from '../../components/base-component.js';
 import { store } from '../../store.js'; // connect to redux
 
-import { Tooltip } from '../pl-tooltip/pl-tooltip';
+import { Tooltip } from '../../components/pl-tooltip/pl-tooltip';
 import VisuallyHidden from '@reach/visually-hidden';
 
 import { minViewportWidth, maxViewportWidth, getRandom } from '../../utils';
+
+import styles from './pl-viewport-size-list.scss?external';
 
 // @todo: re-add keyboard shortcuts to these
 @define
@@ -25,10 +27,17 @@ class ViewportSizes extends BaseComponent {
     return self;
   }
 
-  connecting() {
+  connectedCallback() {
+    super.connectedCallback && super.connectedCallback();
+    styles.use();
     const state = store.getState();
     const { ishControlsHide } = window.ishControls;
     this.ishControlsHide = ishControlsHide;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback && super.disconnectedCallback();
+    styles.unuse();
   }
 
   shouldUpdate(prevProps, prevState) {
@@ -86,6 +95,7 @@ class ViewportSizes extends BaseComponent {
 
   rendered() {
     this.iframe = document.querySelector('pl-iframe');
+    this.iframeElem = document.querySelector('pl-iframe iframe');
   }
 
   render() {
@@ -107,14 +117,13 @@ class ViewportSizes extends BaseComponent {
                     ref: triggerRef,
                   })}
                   onClick={e => this.resizeViewport('small')}
-                >
-                  <VisuallyHidden>Resize viewport to small</VisuallyHidden>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: '<pl-icon name="phone"></pl-icon>',
-                    }}
-                  />
-                </button>
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      <span class="is-vishidden">Resize viewport to small</span>
+                      <pl-icon name="phone"></pl-icon>
+                    `,
+                  }}
+                />
               )}
             </Tooltip>
           </li>
@@ -135,14 +144,13 @@ class ViewportSizes extends BaseComponent {
                     ref: triggerRef,
                   })}
                   onClick={e => this.resizeViewport('medium')}
-                >
-                  <VisuallyHidden>Resize viewport to medium</VisuallyHidden>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: '<pl-icon name="tablet"></pl-icon>',
-                    }}
-                  />
-                </button>
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      <span class="is-vishidden">Resize viewport to medium</span>
+                      <pl-icon name="tablet"></pl-icon>
+                    `,
+                  }}
+                />
               )}
             </Tooltip>
           </li>
@@ -163,14 +171,13 @@ class ViewportSizes extends BaseComponent {
                     ref: triggerRef,
                   })}
                   onClick={e => this.resizeViewport('large')}
-                >
-                  <VisuallyHidden>Resize viewport to large</VisuallyHidden>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: '<pl-icon name="laptop"></pl-icon>',
-                    }}
-                  />
-                </button>
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      <span class="is-vishidden">Resize viewport to large</span>
+                      <pl-icon name="laptop"></pl-icon>
+                    `,
+                  }}
+                />
               )}
             </Tooltip>
           </li>
@@ -191,14 +198,13 @@ class ViewportSizes extends BaseComponent {
                     ref: triggerRef,
                   })}
                   onClick={e => this.resizeViewport('full')}
-                >
-                  <VisuallyHidden>Resize viewport to full</VisuallyHidden>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: '<pl-icon name="desktop"></pl-icon>',
-                    }}
-                  />
-                </button>
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      <span class="is-vishidden">Resize viewport to full</span>
+                      <pl-icon name="desktop"></pl-icon>
+                    `,
+                  }}
+                />
               )}
             </Tooltip>
           </li>
