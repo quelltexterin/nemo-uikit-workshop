@@ -1,6 +1,5 @@
 <!-- description, etc. -->
 {{#if descBlockExists }}
-
 <div
   class="pl-c-pattern-info__panel pl-c-pattern-info__panel--info pl-js-pattern-info"
 >
@@ -9,14 +8,11 @@
   <div class="pl-c-pattern-info__header">
     <ul class="pl-c-breadcrumb">
       {{#with patternBreadcrumb }}
-
       <li class="pl-c-breadcrumb__item">{{ patternGroup }}</li>
-
       {{#if patternSubgroup }}
       <li class="pl-c-breadcrumb__item">{{ patternSubgroup }}</li>
       {{/if }} {{/with }}
     </ul>
-    <!--end pl-c-breadcrumb-->
 
     <h2 class="pl-c-pattern-info__title">
       {{ patternName }} {{#if patternState }}
@@ -26,58 +22,61 @@
       ></span>
       {{/if }}
     </h2>
-    <!--end pl-c-pattern-info__title-->
   </div>
-  <!--end pl-c-pattern-info__header-->
   {{/if }} {{#if patternDescExists }}
   <div class="pl-c-pattern-info__description pl-c-text-passage">
-    {{{ patternDesc }}} {{#if patternDescAdditions }} {{{ patternDescAdditions
-    }}} {{/if }}
+    {{{ patternDesc }}} {{#if patternDescAdditions }} {{{
+    patternDescAdditions}}} {{/if }}
   </div>
-  <!--end pl-c-pattern-info__description-->
-  {{/if }} {{#if lineageExists }}
-  <p class="pl-c-lineage pl-js-lineage">
-    The
-    <em>{{ patternName }}</em>
-    pattern contains the following patterns: {{#each lineage }}
-    <a
-      href="{{ lineagePath }}"
-      class="pl-c-lineage__link pl-js-lineage-link"
-      data-patternpartial="{{ lineagePattern }}"
-    >
-      {{ lineagePattern }} {{#if lineageState }}<span
-        class="pl-c-pattern-state pl-c-pattern-state--{{ lineageState }}"
-        title="{{ lineageState }}"
-      />
-      {{/if }}
-    </a>
-    <!--end pl-c-lineage__link-->
-    {{#if hasComma }}, {{/if }} {{/each }}
-  </p>
-  <!--end pl-c-lineage-->
-  {{/if }} {{#if lineageRExists }}
-  <p class="pl-c-lineage">
-    The
-    <em>{{ patternName }}</em>
-    pattern is included in the following patterns: {{#each lineageR }}
-    <a
-      href="{{ lineagePath }}"
-      class="pl-c-lineage__link pl-js-lineage-link"
-      data-patternpartial="{{ lineagePattern }}"
-    >
-      {{ lineagePattern }} {{#if lineageState }}<span
-        class="pl-c-pattern-state pl-c-pattern-state--{{ lineageState }}"
-        title="{{ lineageState }}"
-      />
-      {{/if }}
-    </a>
-    <!--end pl-c-lineage__link-->
-    {{#if hasComma }}, {{/if }} {{/each }}
-  </p>
-  <!--end pl-c-lineage-->
-  {{/if }} {{#if annotationExists }}
-  <div class="pl-c-annotations pl-c-text-passage pl-js-annotations">
-    <h2 class="pl-c-annotations__title">Annotations</h2>
+  {{/if }}
+  <details class="pl-c-details">
+    <summary class="pl-c-details__summary"><h2>Usage</h2></summary>
+    {{#if lineageExists}}
+    <p class="pl-c-lineage pl-js-lineage">
+      The
+      <em>{{ patternName }}</em>
+      pattern contains the following patterns: {{#each lineage }}
+      <a
+        href="{{ lineagePath }}"
+        class="pl-c-lineage__link pl-js-lineage-link"
+        data-patternpartial="{{ lineagePattern }}"
+      >
+        {{ lineagePattern }} {{#if lineageState }}<span
+          class="pl-c-pattern-state pl-c-pattern-state--{{ lineageState }}"
+          title="{{ lineageState }}"
+        />
+        {{/if }}
+      </a>
+      <!--end pl-c-lineage__link-->
+      {{#if hasComma }}, {{/if }} {{/each }}
+    </p>
+    {{/if}}
+    <!--end pl-c-lineage-->
+    {{#if lineageRExists }}
+    <p class="pl-c-lineage">
+      The
+      <em>{{ patternName }}</em>
+      pattern is included in the following patterns: {{#each lineageR }}
+      <a
+        href="{{ lineagePath }}"
+        class="pl-c-lineage__link pl-js-lineage-link"
+        data-patternpartial="{{ lineagePattern }}"
+      >
+        {{ lineagePattern }} {{#if lineageState }}<span
+          class="pl-c-pattern-state pl-c-pattern-state--{{ lineageState }}"
+          title="{{ lineageState }}"
+        />
+        {{/if }}
+      </a>
+      <!--end pl-c-lineage__link-->
+      {{#if hasComma }}, {{/if }} {{/each }}
+    </p>
+    <!--end pl-c-lineage-->
+    {{/if }}
+  </details>
+  {{#if annotationExists }}
+  <details open class="pl-c-annotations pl-js-annotations pl-c-details">
+    <summary class="pl-c-details__summary"><h2>Annotations</h2></summary>
     <ol class="pl-c-annotations__list">
       {{#each annotations }}
       <li class="pl-c-annotations__item">
@@ -90,7 +89,7 @@
       {{/each }}
     </ol>
     <!--end pl-c-annotations__list-->
-  </div>
+  </details>
   <!--end pl-c-annotations-->
   {{/if }}
 </div>
